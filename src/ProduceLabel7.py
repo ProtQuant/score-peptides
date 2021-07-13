@@ -15,7 +15,7 @@ def init_proteins(in_filepath, generateFile=False, out_filePath='.\\Testcases2\\
     will create protList and protDict
     :param
         filepath: string, path of one .fasta file that describes all of the proteins believed to be in the species
-        generateFile: boolean, will output a file containing the items in protDict if ture
+        generateFile: boolean, will output a file containing the items in protDict if true
         out_filePath: string, path of the above file, needs to be located in an existing directory
     :return
         protList: a list of all proteins from the input file
@@ -28,8 +28,8 @@ def init_proteins(in_filepath, generateFile=False, out_filePath='.\\Testcases2\\
                                                      when we know there are unseenPeptides from the protein),
                                       'unseenPeptides': a list of peptides formula broken up from leftProtein,
                                       'list_intensity': a list of intensity value of the seen peptides
-                                      'prot_total'：int, largest 3 intensity value
-                                                        (largest 2 if count == 2, no value if count < 2)}
+                                      'prot_total'：int, sum of the largest 3 intensity value
+                                                        set to -1 if list_intensity is empty}
     """
     protList = []
     protDict = {}
@@ -144,7 +144,7 @@ def init_peptides_from_one_file(filepath, colname=['peptide', 'intensity'],
         colname: list of string, the needed colume names,
                     the first element should be the name of the column of peptides' formula
                     the second element should be the name of the column of values for scoring
-        generateFile: boolean, will output a file containing items in pepDict if ture
+        generateFile: boolean, will output a file containing items in pepDict if true
         out_filePath: string, path of the above file, needs to be located in an existing directory
     :return:
         pepList: a list of all peptides from the input files without duplicates
@@ -341,16 +341,19 @@ def update_unseen_peptides_of_one_file(protList, protDict_temp, pepList, pepDict
     """
     will create unseenPepDict for unseen peptides
     will update unseenPepDict [pep]['protIndex'] , which are the proteins that produce the unseen peptides
+    will update protDict_temp[prot]['leftProtein'] and protDict_temp[prot]['unseenPeptides'] when calling find_unseen_peptides_from_one_protein()
     :param
         protList: first return value of init_proteins()
         protDict_temp: first return value of update_occurrence()
         pepList: first return value of init_peptides()
         pepDict: second return value of update_occurrence()
-        generateFile: boolean, will output two files containing items in protDict_temp and unseenPepDict respectively if ture
+        generateFile: boolean, will output two files containing items in protDict_temp and unseenPepDict respectively if true
         out_filePath_prot: string, path for the above first file, needs to be located in an existing directory
         out_filePath_unsPep: string, path for the above first file, needs to be located in an existing directory
     :return:
         updated protDict_temp
+        unseenPepDict: a dictionary for the unseen peptides in one .csv file
+            peptide_formula: {'score': 0, 'protIndex': list of indices of the proteins that contain the peptide}
         unsPepDf: pandas dataframe, containing the unseen peptides of this .csv file
                     columns = ['peptide', 'score']
     """
@@ -385,7 +388,7 @@ def update_unseen_peptides_of_one_file(protList, protDict_temp, pepList, pepDict
     unsPepDf = pd.DataFrame({'peptide': unseenPepDict.keys(),
                              'score': [unseenPepDict[k]['score'] for k in unseenPepDict]})
 
-    return protDict_temp, unsPepDf
+    return protDict_temp, unseenPepDict, unsPepDf
 
 
 def calculate_score_of_one_file(pepDict, protDict_temp, generateFile=False,
@@ -452,8 +455,8 @@ def main():
 
     """
     Two input values:
-        fastaFile: path of one .fasta file that contains protein formula
-        folderPath: path of one folder that contains the many files of peptides' infomation
+        fastaFile: string, path of one .fasta file that contains protein formulas
+        folderPath: string, path of one folder that contains the many files of peptides' infomation
     """
 
     fastaFile = '../uniprot-proteome_UP000000803.fasta'
@@ -461,10 +464,10 @@ def main():
 
     """
     Two debugging options:
-        proteinInfo: boolean, will generate two files in protein folder if ture
+        proteinInfo: boolean, will generate two files in protein folder if true
                         one for protein index and protein formula
                         one for simple peptides broke up from the proteins
-        peptideInfo: boolean, will generate 3 files in peptide/filename folder for each file if ture
+        peptideInfo: boolean, will generate 3 files in peptide/filename folder for each file if true
                         one for protein ['',]
                         one for scored peptides []
                         one for unseen peptides []
@@ -503,16 +506,16 @@ def main():
             print('processing file: ' + file)
             filePath = folderPath + '/' + file
             pepList, pepDict = init_peptides_from_one_file(filePath)
-            protDict_temp, pepDict, ignore, valued = update_occurrence_of_one_file(allPossiblePepDict, protList,
+            protDict_temp, pepDict, ignored, valued = update_occurrence_of_one_file(allPossiblePepDict, protList,
                                                                                    protDict,
                                                                                    pepList, pepDict)
-            protDict_temp, unsPepDf = update_unseen_peptides_of_one_file(protList, protDict_temp, pepList, pepDict)
+            protDict_temp, unseenPepDict, unsPepDf = update_unseen_peptides_of_one_file(protList, protDict_temp, pepList, pepDict)
             pepDf, pepDf_score = calculate_score_of_one_file(pepDict, protDict_temp)
 
             all_scoreDf = all_scoreDf.append(pepDf_score, ignore_index=True)
             all_unsPepDf = all_unsPepDf.append(unsPepDf,
                                                ignore_index=True)  # need drop duplicate, and delete the ones in all_scoreDf
-            fileInfoDf = fileInfoDf.append([{'fileName': file, '#ignoredProtein': ignore, '#valuedProtein': valued}],
+            fileInfoDf = fileInfoDf.append([{'fileName': file, '#ignoredProtein': ignored, '#valuedProtein': valued}],
                                            ignore_index=True)
 
             if peptideInfo:
@@ -528,7 +531,11 @@ def main():
                                        'list_intensity': [protDict_temp[k]['list_intensity'] for k in protDict_temp],
                                        'prot_total': [protDict_temp[k]['prot_total'] for k in protDict_temp]})
                 protDf.to_csv(peptideInfoFolder + "/protein information.csv", index=True, sep=',')
-                unsPepDf.to_csv(peptideInfoFolder + "/unseen peptide.csv", index=True, sep=',')
+                unseenPepDf = pd.DataFrame({'peptide': unseenPepDict.keys(),
+                                         'score': [unseenPepDict[k]['score'] for k in unseenPepDict],
+                                         'protIndex': [unseenPepDict[k]['protIndex'] for k in
+                                                       unseenPepDict]})
+                unseenPepDf.to_csv(peptideInfoFolder + "/unseen peptide.csv", index=True, sep=',')
 
             pepTime = time.perf_counter()
             print('\t Finish time: ' + str(pepTime))
