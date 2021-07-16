@@ -1,9 +1,10 @@
 # score-peptides
 **stage one of the project**
 
-* The latest version of code is src/ProduceLabel7.py. It can run directly and  will process files in `folderpath`.
+* The latest version of code is src/ProduceLabel8.py. It can run directly and  will process files in `folderpath`.
 * The code is not finished yet. 
   * more test cases are needed
+  * haven't update the explanation of ProduceLabel7 to that of ProduceLabel8
 
 
 
@@ -25,15 +26,8 @@ other info:
 
   final score is 20
 
-* protein = 'ABBKBBK'
-
-  pep = 'BBK'
-
-  protein.replace(pep, '')  --> leftProtein = 'A'
-
-  Any protein with duplicate sub-string may have this problem.
-
   
+
 
 # Explanation of ProduceLabel7.py
 
