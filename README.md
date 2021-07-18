@@ -36,7 +36,7 @@ other info:
 
   In this case, the simple peptides are: [BBK, MBBK, ...]
 
-  BBK is considered to occur in prot2.
+  BBK is not considered to occur in prot2.
 
   * Should we consider BBK occur in prot2 ? Since there are lots of peptides, which are located at the beginning of a protein, missing the first "M", and we consider them occur in that protein. 
 
