@@ -26,6 +26,20 @@ other info:
 
   final score is 20
 
+* prot1:    AAKAAR**BBK**
+
+  prot2:    **MBBK**BBRABBKAAAAK
+
+  pep:     BBK
+
+  When we record the occurrence of a peptide, we will first search the peptide among the simple peptides. If it is not found, we will search it through the proteins.
+
+  In this case, the simple peptides are: [BBK, MBBK, ...]
+
+  BBK is considered to occur in prot2.
+
+  * Should we consider BBK occur in prot2 ? Since there are lots of peptides, which are located at the beginning of a protein, missing the first "M", and we consider them occur in that protein. 
+
   
 
 
