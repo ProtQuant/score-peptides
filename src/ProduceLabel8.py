@@ -31,7 +31,7 @@ def init_proteins(in_filepath, generateFile=False, out_filePath='.\\Testcases2\\
                                                      when we know there are unseenPeptides from the protein),
                                       'unseenPeptides': a list of peptides formula broken up from leftProtein,
                                       'list_intensity': a list of intensity value of the seen peptides
-                                      'prot_total'：int, sum of the largest 3 intensity value
+                                      'prot_total':int, sum of the largest 3 intensity value
                                                         set to -1 if list_intensity is empty}
     """
     protList = []
@@ -266,6 +266,7 @@ def update_occurrence_of_one_file(allPossiblePepDict, protpepDictList, protList,
                                 pass
                     # may locate at the head of a protein missing an M
                     elif prot.startswith('M' + pep):
+                        # print("M problem")
                         occurrence += 1
                         pepDict[pep]['protIndex'].append(protIndex)
                         protDict_temp[prot]['pepIndex'].append(pepIndex)
@@ -469,11 +470,11 @@ def main():
         folderPath: string, path of one folder that contains the many files of peptides' infomation
     """
 
-    # fastaFile = '../Testcases4/T1/test.fasta'
-    # folderPath = '../Testcases4/T1/flyquant'
+    fastaFile = '../Testcases4/T4/test.fasta'
+    folderPath = '../Testcases4/T4/flyquant'
 
-    fastaFile = '../uniprot-proteome_UP000000803.fasta'
-    folderPath = '../Testcases4/T2/flyquant'
+    # fastaFile = '../uniprot-proteome_UP000000803.fasta'
+    # folderPath = '../Testcases4/T2/flyquant'
 
     """
     Two debugging options:
@@ -520,15 +521,18 @@ def main():
 
     # process the .csv files one by one
     filelist = os.listdir(folderPath)
-    for file in filelist:
+    fileIndex = -1
+    for file in filelist:  # empty file may lead to problem
         if file.endswith('.csv') or file.endswith('.tsv'):
             print('processing file: ' + file)
+            fileIndex += 1
             filePath = folderPath + '/' + file
             pepList, pepDict = init_peptides_from_one_file(filePath)
-            protpepDictList_temp, protDict_temp, pepDict, ignored, valued = update_occurrence_of_one_file(allPossiblePepDict, protpepDictList,
-                                                                                    protList,
-                                                                                    protDict,
-                                                                                    pepList, pepDict)
+            protpepDictList_temp, protDict_temp, pepDict, ignored, valued = update_occurrence_of_one_file(
+                allPossiblePepDict, protpepDictList,
+                protList,
+                protDict,
+                pepList, pepDict)
             protDict_temp, unseenPepDict, unsPepDf = update_unseen_peptides_of_one_file(protList, protDict_temp,
                                                                                         pepList, pepDict,
                                                                                         allPossiblePepDict,
@@ -556,7 +560,8 @@ def main():
                 peptideInfoFolder = folderPath + "/../peptideInfo"
                 if not os.path.exists(peptideInfoFolder):
                     os.makedirs(peptideInfoFolder)
-                peptideInfoFile = folderPath + "/../peptideInfo/" + "Debug " + file.replace('.csv', '')
+                peptideInfoFile = folderPath + "/../peptideInfo/" + str(fileIndex) + "_Debug " + file.replace('.csv',
+                                                                                                              '')
                 writer = pd.ExcelWriter(peptideInfoFile + '.xlsx')
                 pepDf.to_excel(writer, sheet_name='peptide score', index=True)
                 protDf.to_excel(writer, sheet_name='protein information', index=True)
@@ -566,10 +571,13 @@ def main():
             pepTime = time.perf_counter()
             print('\t Finish time: ' + str(pepTime))
 
-    # choose the most common score, will choose 100 if the quantities of 100 and 50 are the same
+    # print(all_scoreDf)
+    print(all_scoreDf.value_counts())
+    # choose the most common score, will choose the larger score if the quantities of each value are the same
     all_scoreDf = all_scoreDf.groupby(['peptide'])['score'].agg(
-        lambda x: x.value_counts(sort=False).index[0]).reset_index(
-        drop=False)  # x.value_counts(sort=False)  # reset index to make it still a dataframe rather than a series
+        lambda x: x.value_counts().index[0]).reset_index(
+        drop=False)  # !! wrong if add x.value_counts(sort=False)  # reset index to make it still a dataframe rather than a series
+    # print(all_scoreDf)
 
     # delete duplicate unseen peptides and delete the ones appearing in all_scoreDf
     all_unsPepDf = all_unsPepDf.drop_duplicates().reset_index(drop=True)
