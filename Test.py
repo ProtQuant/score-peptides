@@ -1,5 +1,7 @@
 import heapq
 import os
+import pickle
+
 import pandas as pd
 
 dirname = '.\\1_findOutput'
@@ -51,19 +53,19 @@ from joblib.numpy_pickle_utils import xrange
 # d1.update(d2)
 # print(d1)
 
-pep = ['a', 'c', 'b', 'c', 'c', 'c', 'b']
-ind = [50, 50, 50, 100, 100, 100, 100]
-df = pd.DataFrame({'pep': pep, 'ind': ind})
-pep1 = ['aak', 'aak', 'aak']
-ind1 = [50,200,20]
-df1 = pd.DataFrame({'pep': pep1, 'ind': ind1})
-df = df.append(df1)
-print(df)
-print(df.value_counts())
-print(df.value_counts().index[0])
-print(df.groupby(['pep']))
-df1 = df.groupby(['pep'])['ind'].agg(lambda x: x.value_counts(sort=False).index[0])  #sort=False
-print(df1)
+# pep = ['a', 'c', 'b', 'c', 'c', 'c', 'b']
+# ind = [50, 50, 50, 100, 100, 100, 100]
+# df = pd.DataFrame({'pep': pep, 'ind': ind})
+# pep1 = ['aak', 'aak', 'aak']
+# ind1 = [50,200,20]
+# df1 = pd.DataFrame({'pep': pep1, 'ind': ind1})
+# df = df.append(df1)
+# print(df)
+# print(df.value_counts())
+# print(df.value_counts().index[0])
+# print(df.groupby(['pep']))
+# df1 = df.groupby(['pep'])['ind'].agg(lambda x: x.value_counts(sort=False).index[0])  #sort=False
+# print(df1)
 
 # df_a = pd.DataFrame({'pep': ['aa','ss','bb'], 'ind': [0, 0, 0]})
 # df_b = pd.DataFrame({'pep': ['ss', 'cc'], 'ind': [7, 8]})
@@ -76,11 +78,37 @@ print(df1)
 # df_c = pd.DataFrame(df_a, columns=['pep', 'ind'])
 # print(df_c)
 
-A = {'a': 1, 'b': 2, "c":3}
-del A["b"]
-try:
-    del A["b"]
-except Exception:
-    pass
-del A["a"]
-print(A)
+# A = {'a': 1, 'b': 2, "c":3}
+# del A["b"]
+# try:
+#     del A["b"]
+# except Exception:
+#     pass
+# del A["a"]
+# print(A)
+
+# print(10%5)
+
+# df = pd.DataFrame({'A': [1, 2, 1],
+#                    'B': [4, 4, 4],
+#                    'C': [1, 2, 1],
+#                    'D': ['q', 'w', 'e']})
+# print(df)
+# df=df.set_index(['D'])
+# print(df)
+# df = df.T.drop_duplicates().T
+# print(df)
+
+df = pd.DataFrame()
+print(df)
+df = df.append(pd.DataFrame({'A': [1, 2, 1],
+                   'B': [4, 4, 4],
+                   'C': [1, 2, 1],
+                   'D': ['q', 'w', 'e']}))
+print(df)
+
+outputFolder = "../saved data"
+if not os.path.exists(outputFolder):
+    os.makedirs(outputFolder)
+with open('../saved data/test.pkl', 'wb') as outp:  # Overwrites any existing file.
+    pickle.dump(df, outp, pickle.HIGHEST_PROTOCOL)
