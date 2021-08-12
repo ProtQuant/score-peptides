@@ -1,7 +1,9 @@
-# 2021/7/16
+#  produce score each ten files
+
+# 2021/7/21
 # need to install openpyxl
-# the deletion of seen peptides should also obey splitting rules
-# change the default output structure
+# BBK is in MBBKAKKCCKDDK, but if MBBK is also find,  how to calculate prot_total. Problem persists.
+# scoring: [20, 20] -- > 20; [20, 20, 50] --> 50. Solved
 
 import copy
 import heapq
@@ -223,8 +225,10 @@ def update_occurrence_of_one_file(allPossiblePepDict, protpepDictList, protList,
     pepIndex = 0
     for pep in pepList:  # pepList contains all the peptides from .tsv files
 
+        isSimple = False
         # first search it in allPossiblePepDict
         if pep in allPossiblePepDict:  # allPossiblePepDict contains all the simple peptides
+            isSimple = True
             protIndex = allPossiblePepDict[pep]
             pepDict[pep]['protIndex'] = protIndex
             pepDict[pep]['occurrence'] = len(protIndex)
@@ -451,10 +455,12 @@ def calculate_score_of_one_file(pepDict, protDict_temp, generateFile=False,
     if generateFile:
         pepDf.to_csv(out_filePath, index=True, sep=',')
 
-    pepDf_score = pd.DataFrame(pepDf, columns=['peptide', 'score'])
-    pepDf_score = pepDf_score.dropna().reset_index(drop=True)
+    pepDf_have_score = pd.DataFrame(pepDf, columns=['peptide', 'score'])
+    pepDf_have_score = pepDf_have_score.dropna().reset_index(drop=True)
+    pepDf_score = pepDf_have_score.drop(pepDf_have_score[pepDf_have_score['score'] == 20].index)
+    pepDf_ignore = pepDf_have_score.drop(pepDf_have_score[pepDf_have_score['score'] != 20].index)
 
-    return pepDf, pepDf_score
+    return pepDf, pepDf_score, pepDf_ignore
 
 
 # def gather_all_files(folderPath, protList, protDict, allPossiblePepDict):
@@ -470,11 +476,12 @@ def main():
         folderPath: string, path of one folder that contains the many files of peptides' infomation
     """
 
-    fastaFile = '../Testcases4/T4/test.fasta'
-    folderPath = '../Testcases4/T4/flyquant'
+    fastaFile = '../Testcases4/T5/test.fasta'
+    folderPath = '../Testcases4/T5/flyquant'
 
     # fastaFile = '../uniprot-proteome_UP000000803.fasta'
     # folderPath = '../Testcases4/T2/flyquant'
+    # folderPath = '../flydata_example3'
 
     """
     Two debugging options:
@@ -517,6 +524,7 @@ def main():
     # 3 dataframe to store the info from each .csv file
     fileInfoDf = pd.DataFrame(columns=['fileName', '#ignoredProtein', '#valuedProtein'])
     all_scoreDf = pd.DataFrame(columns=['peptide', 'score'])
+    all_ignoreDf = pd.DataFrame(columns=['peptide', 'score'])
     all_unsPepDf = pd.DataFrame(columns=['peptide', 'score'])
 
     # process the .csv files one by one
@@ -537,9 +545,10 @@ def main():
                                                                                         pepList, pepDict,
                                                                                         allPossiblePepDict,
                                                                                         protpepDictList_temp)
-            pepDf, pepDf_score = calculate_score_of_one_file(pepDict, protDict_temp)
+            pepDf, pepDf_score, pepDf_ignore = calculate_score_of_one_file(pepDict, protDict_temp)
 
             all_scoreDf = all_scoreDf.append(pepDf_score, ignore_index=True)
+            all_ignoreDf = all_ignoreDf.append(pepDf_ignore, ignore_index=True)
             all_unsPepDf = all_unsPepDf.append(unsPepDf,
                                                ignore_index=True)  # need drop duplicate, and delete the ones in all_scoreDf
             fileInfoDf = fileInfoDf.append([{'fileName': file, '#ignoredProtein': ignored, '#valuedProtein': valued}],
@@ -563,16 +572,35 @@ def main():
                 peptideInfoFile = folderPath + "/../peptideInfo/" + str(fileIndex) + "_Debug " + file.replace('.csv',
                                                                                                               '')
                 writer = pd.ExcelWriter(peptideInfoFile + '.xlsx')
-                pepDf.to_excel(writer, sheet_name='peptide score', index=True)
                 protDf.to_excel(writer, sheet_name='protein information', index=True)
+                pepDf.to_excel(writer, sheet_name='peptide score', index=True)
                 unseenPepDf.to_excel(writer, sheet_name='unseen peptide', index=True)
                 writer.save()
+
+            # output data after processing 10 .csv files
+            if fileIndex % 10 == 0:
+                print(fileIndex)
+                all_scoreDf1 = all_scoreDf.groupby(['peptide'])['score'].agg(
+                    lambda x: x.value_counts().index[0]).reset_index(
+                    drop=False)
+                all_ignoreDf1 = all_ignoreDf.drop_duplicates().reset_index(drop=True)
+                all_ignoreDf1 = all_ignoreDf1[~ all_ignoreDf1['peptide'].isin(all_scoreDf1['peptide'])]
+                all_unsPepDf1 = all_unsPepDf.drop_duplicates().reset_index(drop=True)
+                all_unsPepDf1 = all_unsPepDf1[~ all_unsPepDf1['peptide'].isin(all_ignoreDf1['peptide'])]
+                all_unsPepDf1 = all_unsPepDf1[~ all_unsPepDf1['peptide'].isin(all_scoreDf1['peptide'])]
+                finalScoreDf = all_scoreDf1.append(all_ignoreDf1, ignore_index=True).append(all_unsPepDf1,
+                                                                                          ignore_index=True)
+                outputFolder = folderPath + '/../output'
+                if not os.path.exists(outputFolder):
+                    os.makedirs(outputFolder)
+                finalScoreDf.to_csv(outputFolder + '/'+str(fileIndex)+'_score.csv', index=True, sep=',')
+                fileInfoDf.to_csv(outputFolder + '/'+str(fileIndex)+'_ignore.csv', index=True, sep=',')
 
             pepTime = time.perf_counter()
             print('\t Finish time: ' + str(pepTime))
 
     # print(all_scoreDf)
-    print(all_scoreDf.value_counts())
+    # print(all_scoreDf.value_counts())
     # choose the most common score, will choose the larger score if the quantities of each value are the same
     all_scoreDf = all_scoreDf.groupby(['peptide'])['score'].agg(
         lambda x: x.value_counts().index[0]).reset_index(
@@ -580,11 +608,16 @@ def main():
     # print(all_scoreDf)
 
     # delete duplicate unseen peptides and delete the ones appearing in all_scoreDf
+    all_ignoreDf = all_ignoreDf.drop_duplicates().reset_index(drop=True)
+    all_ignoreDf = all_ignoreDf[~ all_ignoreDf['peptide'].isin(all_scoreDf['peptide'])]
+
+    # delete duplicate unseen peptides and delete the ones appearing in all_scoreDf and all_ignoreDf
     all_unsPepDf = all_unsPepDf.drop_duplicates().reset_index(drop=True)
-    all_unsPepDf_filter = all_unsPepDf[~ all_unsPepDf['peptide'].isin(all_scoreDf['peptide'])]
+    all_unsPepDf = all_unsPepDf[~ all_unsPepDf['peptide'].isin(all_ignoreDf['peptide'])]
+    all_unsPepDf = all_unsPepDf[~ all_unsPepDf['peptide'].isin(all_scoreDf['peptide'])]
 
     # concatenating scored peptides and unseen peptides
-    finalScoreDf = all_scoreDf.append(all_unsPepDf_filter, ignore_index=True)
+    finalScoreDf = all_scoreDf.append(all_ignoreDf, ignore_index=True).append(all_unsPepDf, ignore_index=True)
 
     outputFolder = folderPath + '/../output'
     if not os.path.exists(outputFolder):
