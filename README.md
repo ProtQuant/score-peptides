@@ -1,49 +1,34 @@
 # score-peptides
 **stage one of the project**
 
-* The latest version of code is src/ProduceLabel8.py. It can run directly and  will process files in `folderpath`.
-* The code is not finished yet. 
+* The latest version of code is **src/ProduceLabel8.1.py**. It can run directly and  will process files in `folderpath`.
   * more test cases are needed
   * haven't update the explanation of ProduceLabel7 to that of ProduceLabel8
+* **output/score.csv** is the file needed for stage 2
 
+* flydata_example3 contains all the peptides information
 
-
-other info:
-
-* flydata_example3 contains all the peptides information from the new data
-
-* uniprot-proteome_UP000000803.fasta contains protein formula
-
-* ignore Test.py, Testcases, Testcases2, readme.pdf
-
-* will delete some useless files in the repository later.
+* uniprot-proteome_UP000000803.fasta contains all the protein formulas
 
   
 
+  
+
+
 # Cases that may cause problems
-
-* peptide score = [20, 20, 20, 100, 100, 50]
-
-  final score is 20
 
 * prot1:    AAKAAR**BBK**
 
   prot2:    **MBBK**BBRABBKAAAAK
 
+  prot3:    **MBBK**AAK**BBK**
+
   pep:     BBK
-
-  When we record the occurrence of a peptide, we will first search the peptide among the simple peptides. If it is not found, we will search it through the proteins.
-
-  In this case, the simple peptides are: [BBK, MBBK, ...]
-
-  BBK is not considered to occur in prot2.
-
-  * Should we consider BBK occur in prot2 ? Since there are lots of peptides, which are located at the beginning of a protein, missing the first "M", and we consider them occur in that protein. 
 
   
 
 
-# Explanation of ProduceLabel7.py
+# Explanation of ProduceLabel7.py || will be updated to 8th version later.
 
 ## How to use the code
 
