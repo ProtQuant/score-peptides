@@ -50,6 +50,9 @@
 
   * go to the folder contains the source file 
   * type `python ProduceLabel9.py` at command line
+  * Total processing time of default input value (above) is around 8 hours
+
+(Uncomment line 598~614 to see the accumulative output for each 10 peptides files)
 
 
 
@@ -77,10 +80,46 @@
 
 3. Collect the peptides and their scores from all the .csv files.
 
-   * The peptides scored as 20 should not duplicate with peptides scored as 50 or 200.
+   * The peptides scored as 20 should not duplicate with peptides scored as 50 or 100.
    * The peptides scored as 0 should not duplicate with other scored peptides.
 
 
 
 # Default File Structure
+
+```
+- uniprot-proteome_UP000000803.fasta (input)
+- flydata_example3 (input, dowanload from: https://pgb.liv.ac.uk/~tony/flydata/)
+- src
+	- ProduceLabel9.py (source code)
+- saved data (output folder)
+	- ProduceLabel9 (folder name will be the same as the source code)
+    	- Output
+        	- score.csv
+              (columns = [(index), peptide, score])
+            - ignore.csv
+              (columns = [(index), filename, #ignoredProtein, #valuedProtein], but actually we doesn't ignore the proteins having only one peptide in a .csv file)
+        - proteinInfo (if set proteinInfo to True)
+        	- proteinInfo.xlsx
+        		- sheet1: protein index, columns = [(index), protein]
+        		  sheet2: simple peptides, columns = [(index), sPeptide, protIndex]
+        		- You could use this file to check the corresponding protein formula for each protIndex,
+        		  and all the simple peptides with indices of their parent protein(S)
+        - peptideInfo (if set peptideInfo to True) 
+        	- fileIndex_Debug filename.xlsx (info for each input .csv file)
+        		- sheet1: protein infomation, columns = [(index), protein, pepIndex, count, unseenPeptide, list_intensity, prot_total]
+        		  sheet2: peptide score, columns = [(index), index, peptide, intensity, occurrence, protIndex, prot_total, score_0, score]
+        		  sheet3: unseen peptide, columns = [(index), score, protIndex] 
+        		- You could use this file to check the scoring results for single file
+```
+
+* Meanings of different columns will be explained later.
+
+
+
+# Explanation of ProduceLabel9
+
+
+
+
 
