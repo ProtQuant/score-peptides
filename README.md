@@ -1,10 +1,11 @@
 # score-peptides
-**stage one of the project**
+**Stage one of the project : Generate scores for peptides**
 
-* The latest version of code is **src/ProduceLabel8.1.py**. It can run directly and  will process files in `folderpath`.
-  * more test cases are needed
-  * haven't update the explanation of ProduceLabel7 to that of ProduceLabel8
-* **output/score.csv** is the file needed for stage 2
+* srounce code:  **src/ProduceLabel9.py**. 
+
+* **output** folder contains output files of source code
+
+  * score.csv is the needed file for Stage two
 
 * flydata_example3 contains all the peptides information
 
@@ -12,20 +13,39 @@
 
   
 
+
+# ProduceLabel9.py
+
+## How to use ProduceLabel9
+
+* Software dependencies
+
+  ```python
+  # python 3.8
+  # need to install openpyxl
+  import copy
+  import heapq
+  import os
+  import numpy
+  import pandas as pd
+  import time
+  ```
+
+* Input values
+
+  ```python
+   """
+      Two input values:
+          fastaFile: string, path of one .fasta file that contains protein formulas
+          folderPath: string, path of one folder that contains the many files of peptides' infomation
+      """
+      fastaFile = '../uniprot-proteome_UP000000803.fasta'
+      folderPath = '../flydata_example3'
+  ```
+
   
 
 
-# Cases that may cause problems
-
-* prot1:    AAKAAR**BBK**
-
-  prot2:    **MBBK**BBRABBKAAAAK
-
-  prot3:    **MBBK**AAK**BBK**
-
-  pep:     BBK
-
-  
 
 
 # Explanation of ProduceLabel7.py || will be updated to 8th version later.
