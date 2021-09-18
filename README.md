@@ -127,10 +127,10 @@
 
 * **`protDict`**
 
-  A dictionary with all the different proteins as its key
+  A dictionary with all the different proteins as its keys
 
   ```
-  protein_formula: {'pepIndex': a list of indices of the protein's peptides that can be seen from the .csv file,
+  protein_formula: {'pepIndex': a list of indices of the protein's component peptides that can be seen from the .csv file,
                     'count': int, how many peptides from the .csv file are in this protein
                     'leftProtein': empty, no use for now
                     'unseenPeptides': a list of unseen peptides formula (an empty value does not mean all its component peptides appear in the .csv file, it is not empty only when we know their parent proteins are present)
@@ -138,3 +138,19 @@
                     'prot_total':int, sum of the largest 3 intensity value, set to -1 if list_intensity is empty}
   ```
 
+* **`allPossiblePepDict`**
+
+  A dictionary storing all the **simple peptides** and lists of indices of their parent protein(s)
+
+  `simplePep_formula: [protein_indices]`
+
+* **`protpepDictList`**
+
+  A list storing the simple peptides in each protein in the same order  as `ProtList`
+
+  ```
+  [{simplePep_formula_0: protein_index_0, simplePep_formula_1: protein_index_0, simplePep_formula_2: protein_index_0, ...}
+   {simplePep_formula_0: protein_index_1, simplePep_formula_1: protein_index_1, simplePep_formula_2: protein_index_1, ...}
+   {simplePep_formula_0: protein_index_2, simplePep_formula_1: protein_index_2, simplePep_formula_2: protein_index_2, ...}
+   ...]
+  ```
