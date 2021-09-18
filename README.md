@@ -117,8 +117,24 @@
 
 
 
-## Main Data Structure In ProduceLabel9.py
+# Main Data Structure In ProduceLabel9
 
 * **`protList`**
 
-  a list of 
+  A list of all the proteins from the .fasta file without duplications
+
+  For storing the indices of proteins
+
+* **`protDict`**
+
+  A dictionary with all the different proteins as its key
+
+  ```
+  protein_formula: {'pepIndex': a list of indices of the protein's peptides that can be seen from the .csv file,
+                    'count': int, how many peptides from the .csv file are in this protein
+                    'leftProtein': empty, no use for now
+                    'unseenPeptides': a list of unseen peptides formula (an empty value does not mean all its component peptides appear in the .csv file, it is not empty only when we know their parent proteins are present)
+                    'list_intensity': a list of intensity values of the seen peptides
+                    'prot_total':int, sum of the largest 3 intensity value, set to -1 if list_intensity is empty}
+  ```
+
