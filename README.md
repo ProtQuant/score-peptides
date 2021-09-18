@@ -53,23 +53,5 @@
   * go to the folder contains the source file 
   * `python ProduceLabel9.py`
 
-3. `protIndex` and fill in `pepDf['prot_total']` according to the index
 
-   * input:   `pepDict[pep]['intensity']`, `pepDict[pep]['protIndex']`, `protDict[prot]['prot_total']`
-* output:    
-     * | `pepDf`   | peptide | intensity | occurrence| `protIndex` | `prot_total` | `score_0` | `score` |          
-       | ---- | ---- | ---- | ---- | ---- | ---- | ---- |---- |
-   
-   c.   gather information
-   
-   * append `pepDf['peptide']` and `pepDf['score']` to `all_scoreDf`
 
-   * append  `unseenPepDf` to `all_unsPepDf`
-* append `filename`, `ignored`, `valued` to `fileInfoDf` 
-   
-4. Process the collected data
-
-   * choose the most common score of one peptide in `all_scoreDf` 
-   * drop duplications in `all_unsPepDf`
-   * In `all_unsPepDf`, delete the peptides that appear in `all_scoreDf`
-   * combine `all_unsPepDf` and`all_unsPepDf` as `finalScoreDf`
