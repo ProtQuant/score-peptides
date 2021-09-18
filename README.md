@@ -76,7 +76,7 @@
 
    ​				 score = 100 if rate > 20%
 
-   ​	d.	If some peptides in the file is exclusive to some proteins, these proteins are considered to be present. For these proteins, delete their component peptides appearing in the file, and score their rest  component peptides (split according to the splitting rule) as 0.
+   ​	d.	If some peptides in the file is exclusive to some proteins, these proteins are considered to be present. For these proteins, delete their component peptides appearing in the file, and score their rest  unseen component peptides (split according to the splitting rule) as 0.
 
 3. Collect the peptides and their scores from all the .csv files.
 
@@ -104,7 +104,7 @@
 				- sheet1: protein index, columns = [(index), protein]
 				  sheet2: simple peptides, columns = [(index), sPeptide, protIndex]
 				- You could use this file to check the corresponding protein formula for each protIndex,
-				  and all the simple peptides with indices of their parent protein(S)
+				  and see all the simple peptides with indices of their parent protein(S)
 		- peptideInfo (if set peptideInfo to True) 
 			- fileIndex_Debug filename.xlsx (info for each input .csv file)
 				- sheet1: protein infomation, columns = [(index), protein, pepIndex, count, unseenPeptide, list_intensity, prot_total]
@@ -117,13 +117,13 @@
 
 
 
-# Main Data Structure In ProduceLabel9
+# Main Data Structures In ProduceLabel9
 
 * **`protList`**
 
-  A list of all the proteins from the .fasta file without duplications
+  A list of all the proteins from the proteins file (.fasta) without duplicates
 
-  For storing the indices of proteins
+  For storing the index of proteins
 
 * **`protDict`**
 
@@ -154,3 +154,37 @@
    {simplePep_formula: protein_index_2, simplePep_formula: protein_index_2, simplePep_formula: protein_index_2, ...}
    ...]
   ```
+
+  When updating the occurrence of peptides in proteins for each .csv file, the (concatenation of) simple peptides that appear in the file will be deleted from `protpepDictList`. This data will then be used to generate `unseen peptides` later.
+
+* **`pepList`**
+
+  A list of all the peptides from one peptides file (.csv) without duplicates
+
+  For storing the index of peptides in one file
+
+* **`pepDict`**
+
+  A dictionary with all peptides from one peptides file (.csv) as its keys
+
+  ```
+  peptide_formula: {'intensity': largest intensity of the peptide from one .csv file,
+                    'occurrence': the number of its parent proteins,
+                    'protIndex': a list of the indices of its parent proteins}
+  ```
+
+* **`fileInfoDf`**
+
+  A data frame storing the ignored proteins in peptides files (.csv). The ignored proteins have only one of its component peptides appearing in a peptides file. Actually we still use these peptides, so its only for recording the number.
+
+  `columns=['fileName', '#ignoredProtein', '#valuedProtein']`
+
+* **`finalScoreDf`**
+
+  A data frame storing the final scores for peptides.
+
+  `columns=['peptide', 'score']`
+
+
+
+# Dataflow in ProduceLabel9
