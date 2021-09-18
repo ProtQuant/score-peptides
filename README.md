@@ -94,23 +94,23 @@
 	- ProduceLabel9.py (source code)
 - saved data (output folder)
 	- ProduceLabel9 (folder name will be the same as the source code)
-    	- Output
-        	- score.csv
-              (columns = [(index), peptide, score])
-            - ignore.csv
-              (columns = [(index), filename, #ignoredProtein, #valuedProtein], but actually we doesn't ignore the proteins having only one peptide in a .csv file)
-        - proteinInfo (if set proteinInfo to True)
-        	- proteinInfo.xlsx
-        		- sheet1: protein index, columns = [(index), protein]
-        		  sheet2: simple peptides, columns = [(index), sPeptide, protIndex]
-        		- You could use this file to check the corresponding protein formula for each protIndex,
-        		  and all the simple peptides with indices of their parent protein(S)
-        - peptideInfo (if set peptideInfo to True) 
-        	- fileIndex_Debug filename.xlsx (info for each input .csv file)
-        		- sheet1: protein infomation, columns = [(index), protein, pepIndex, count, unseenPeptide, list_intensity, prot_total]
-        		  sheet2: peptide score, columns = [(index), index, peptide, intensity, occurrence, protIndex, prot_total, score_0, score]
-        		  sheet3: unseen peptide, columns = [(index), score, protIndex] 
-        		- You could use this file to check the scoring results for single file
+		- Output
+		    - score.csv
+		      (columns = [(index), peptide, score])
+		    - ignore.csv
+		      (columns = [(index), filename, #ignoredProtein, #valuedProtein], but actually we doesn't ignore the proteins having only one peptide in a .csv file)
+		- proteinInfo (if set proteinInfo to True)
+			- proteinInfo.xlsx
+				- sheet1: protein index, columns = [(index), protein]
+				  sheet2: simple peptides, columns = [(index), sPeptide, protIndex]
+				- You could use this file to check the corresponding protein formula for each protIndex,
+				  and all the simple peptides with indices of their parent protein(S)
+		- peptideInfo (if set peptideInfo to True) 
+			- fileIndex_Debug filename.xlsx (info for each input .csv file)
+				- sheet1: protein infomation, columns = [(index), protein, pepIndex, count, unseenPeptide, list_intensity, prot_total]
+				  sheet2: peptide score, columns = [(index), index, peptide, intensity, occurrence, protIndex, prot_total, score_0, score]
+				  sheet3: unseen peptide, columns = [(index), score, protIndex] 
+				- You could use this file to check the scoring results for single file
 ```
 
 * Meanings of different columns will be explained later.
