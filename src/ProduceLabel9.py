@@ -30,7 +30,7 @@ def init_proteins(in_filepath, generateFile=False, out_filePath= base + '/init_p
         protList: a list of all proteins from the input file
                     for storing the indices of the proteins
         protDict: a dictionary of all proteins from the input file
-                    protein_formula: {'pepIndex': a list of indices of the protein's peptides that can be seen
+                    protein_formula: {'pepIndex': a list of indices of the protein's component peptides that can be seen
                                                       from the .csv files,
                                       'count': int, how many peptides from one .csv file are in this protein
                                       'leftProtein': no use for now, was:
@@ -120,7 +120,7 @@ def find_all_possible_simple_peptides(protList, generateFile=False,
         out_filePath: string, path of the above file, need to be located in an existing directory
     :return:
         allPossiblePepDict: a dictionary storing the formula of all the possible simple peptides and the indices of
-                            proteins that contain them
+                            their parent proteins
                                 simplePep_formula: [protein_indices]
         protpepDictList: a list storing the simple peptides in each protein from protList
                                 [simplePepDcit] = [{simplePep_formula: protein_index}]
@@ -165,12 +165,12 @@ def init_peptides_from_one_file(filepath, colname=['peptide', 'intensity'],
         generateFile: boolean, will output a file containing items in pepDict if true
         out_filePath: string, path of the above file, needs to be located in an existing directory
     :return:
-        pepList: a list of all peptides from the input files without duplicates
+        pepList: a list of all peptides from the input file without duplicates
                     for storing the indices of the peptides
-        pepDict: a dictionary of all peptides from the input files
+        pepDict: a dictionary of all peptides from the input file
                     peptide_formula: {'intensity': largest intensity of the peptide from one .csv file,
-                                      'occurrence': the number of the proteins that contain the peptide,
-                                      'protIndex': a list of the indices of the proteins that contain the peptide, }
+                                      'occurrence': the number of its parent proteins,
+                                      'protIndex': a list of the indices of its parent proteins, }
     """
     pepList = []
     pepDict = {}
