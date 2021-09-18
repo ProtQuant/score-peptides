@@ -149,8 +149,8 @@
   A list storing the simple peptides in each protein in the same order  as `ProtList`
 
   ```
-  [{simplePep_formula_0: protein_index_0, simplePep_formula_1: protein_index_0, simplePep_formula_2: protein_index_0, ...}
-   {simplePep_formula_0: protein_index_1, simplePep_formula_1: protein_index_1, simplePep_formula_2: protein_index_1, ...}
-   {simplePep_formula_0: protein_index_2, simplePep_formula_1: protein_index_2, simplePep_formula_2: protein_index_2, ...}
+  [{simplePep_formula: protein_index_0, simplePep_formula: protein_index_0, simplePep_formula: protein_index_0, ...}
+   {simplePep_formula: protein_index_1, simplePep_formula: protein_index_1, simplePep_formula: protein_index_1, ...}
+   {simplePep_formula: protein_index_2, simplePep_formula: protein_index_2, simplePep_formula: protein_index_2, ...}
    ...]
   ```
