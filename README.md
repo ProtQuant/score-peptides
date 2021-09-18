@@ -50,7 +50,7 @@
 
   * go to the folder contains the source file 
   * type `python ProduceLabel9.py` at command line
-  * Total processing time of default input value (above) is around 8 hours
+  * Total processing time with default input value (above) is around 8 hours
 
 (Uncomment line 598~614 to see the accumulative output for each 10 peptides files)
 
@@ -118,8 +118,6 @@
 
 
 # Explanation of ProduceLabel9
-
-
 
 
 
