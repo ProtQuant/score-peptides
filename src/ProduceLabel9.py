@@ -1,10 +1,14 @@
-#  produce score each ten files
 
 # 2021/7/21
-# need to install openpyxl
-# BBK is in MBBKAKKCCKDDK, but if MBBK is also find,  how to calculate prot_total. Problem persists.
+# can produce score each ten files
+# Problems with M at the head of proteins:
+#   Protein: BBKAAK, MBBKAAK ; Peptides BBK -->
+#   - For now: BBK will not be considered to appear in MBBKAAK because BBK is one of the simple peptides
+#   - If we consider BBK to be in MBBKAAK, but if MBBK is also find later,  how to calculate prot_total.
 # scoring: [20, 20] -- > 20; [20, 20, 50] --> 50. Solved
 
+# python 3.8
+# need to install openpyxl
 import copy
 import heapq
 import os
@@ -32,7 +36,8 @@ def init_proteins(in_filepath, generateFile=False, out_filePath= base + '/init_p
                                       'leftProtein': no use for now, was:
                                                      string, the protein formula without seenPeptides (not empty only
                                                      when we know there are unseenPeptides from the protein),
-                                      'unseenPeptides': a list of peptides formula broken up from leftProtein,
+                                      'unseenPeptides': a list of unseen peptides formula (not empty only when we know
+                                                     their parent proteins appear)
                                       'list_intensity': a list of intensity value of the seen peptides
                                       'prot_total':int, sum of the largest 3 intensity value
                                                         set to -1 if list_intensity is empty}
@@ -417,8 +422,7 @@ def calculate_score_of_one_file(pepDict, protDict_temp, generateFile=False,
                                 out_filePath=base+'/7_calculate_score_of_one_file.csv'):
     """
         One peptide may have many scores according to pepDict[pep]['protIndex']
-        Score the peptide as 20 if it has an intensity value of less than 20% of the protein total
-            (The corresponding protein has only this one peptide appear in this .csv file)
+        Score the peptide as 20 if its parent protein has only this one peptide appear in this .csv file)
         Score the peptide as 100 if it has an intensity value of more than 20% of the protein total
         Score the peptide as 50 if it has an intensity value of less than 20% of the protein total
     :param
