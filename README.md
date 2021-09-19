@@ -51,8 +51,8 @@
   * go to the folder contains the source file 
   * type `python ProduceLabel9.py` at command line
   * Total processing time with default input value (above) is around 8 hours
-
-(Uncomment line 598~614 to see the accumulative output for each 10 peptides files)
+  
+  (Uncomment line 598~614 to see the accumulative output for each 10 peptides files)
 
 
 
@@ -70,7 +70,7 @@
 
    ​	c.	For each peptides, calculate the `rate(S)` of `intensity/protein_total`, according to its parent protein(s)
 
-   ​			\-	score = 20 if rate == 100%	(The proteins were once considered as ones that should be ignored.)
+   ​			\-	score = 20 if rate == 100%	(The proteins were once considered as ones that should be **ignored**.)
 
    ​				 score = 50 if rate <= 20%
 
@@ -80,8 +80,8 @@
 
 3. Collect the peptides and their scores from all the .csv files.
 
-   * The peptides scored as 20 should not duplicate with peptides scored as 50 or 100.
-   * The peptides scored as 0 should not duplicate with other scored peptides.
+   * The peptides scored as 20 (`pepDf_ignore`) should not duplicate with peptides scored as 50 or 100 (`pepDf_score`).
+   * The peptides scored as 0 (`unsPepDf`) should not duplicate with other scored peptides.
 
 
 
@@ -146,7 +146,7 @@
 
 * **`protpepDictList`**
 
-  A list storing the simple peptides in each protein in the same order  as `ProtList`
+  A list of dictionary storing the **simple component peptides in each protein** in the same order  as `ProtList`
 
   ```
   [{simplePep_formula: protein_index_0, simplePep_formula: protein_index_0, simplePep_formula: protein_index_0, ...}
@@ -187,4 +187,12 @@
 
 
 
-# Dataflow in ProduceLabel9
+# Main Dataflow in ProduceLabel9
+
+* Blue -- Methods (from left to right)
+
+  Square -- Variables (from top to down)
+
+![produceLabel9](README.assets/produceLabel9.svg)
+
+Other detailed explanations of the file are in the code comment.
